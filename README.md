@@ -1,6 +1,6 @@
 # Weaver 🕸️
 
-A modern, real-time code collection and collaboration tool that helps developers gather, organize, and share code snippets across their development environment.
+A modern, real-time code collection and collaboration tool that helps developers gather, and share code snippets, directories and repositories across their development environment. Meant to be used for feeding your context and code to LLMs for better results.
 
 > ⚠️ **Development Status**: This project is in early development and is not yet stable. APIs and features may change significantly between versions. Use at your own risk.
 
