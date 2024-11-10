@@ -6,130 +6,111 @@ search_dir="."
 extensions=("\.py" ".sh" ".yml" "\.yaml" "\.js" "\.jsx" "\.java" "\.cpp" "\.c" "\.h" "\.hpp" "\.cs" "\.html" "\.css" "\.tsx" "\.ts" "\.go" "\.rb" "\.php" "\.scala" "\.rs" "\.swift" "")
 exclude_patterns=()
 default_excludes=(
-    ".git" ".svn" ".hg" 
+    ".git" ".svn" ".hg" "package-lock.json"
     "node_modules" "vendor" "build" "dist" "target"
     "__pycache__" "*.pyc" "venv" ".env" ".venv" 
     "*_test.go" "*.test.js" "*_spec.rb" "*Test.java" "*_test.py"
     ".idea" ".vscode" ".vs" "*.swp" "*.swo"
     "*.log" "*.lock" "*.tmp"
-    "docs" "*.md" "*.txt"
+    "docs" "*.md" "*.txt" "*.ico" "*.png" "*.jpg" "*.jpeg" "*.gif" "*.svg" "*.bmp" "*.mp4" "*.mov" "*.avi" "*.mkv" "*.mp3" "*.wav" "*.ogg" "*.flac" "*.m4a" "*.webm" "*.wma" 
 )
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-BOLD='\033[1m'
-NC='\033[0m'
+# ANSI color codes in variables for better maintainability
+declare -A COLORS=(
+    ["header"]=$'\033[1;36m'      # Cyan, bold
+    ["section"]=$'\033[1;35m'     # Magenta, bold
+    ["option"]=$'\033[0;32m'      # Green
+    ["emphasis"]=$'\033[1m'       # Bold
+    ["warning"]=$'\033[1;33m'     # Yellow, bold
+    ["reset"]=$'\033[0m'          # Reset
+)
 
-# Help message
+# Function to wrap text at a specified width while preserving indentation
+wrap_text() {
+    local text="$1"
+    local indent="$2"
+    echo "$text" | fold -s -w 80 | sed "2,\$s/^/${indent}/"
+}
+
 show_help() {
-    cat << EOF
-${BOLD}CodeCollect - Code Collection Tool for LLM Processing${NC}
-A tool to gather source code files into a single, LLM-friendly document.
+    local script_name=$(basename "$0")
+    local C="${COLORS[@]}"  # Short reference to colors
+    
+    # Common file extensions as an array for better maintenance
+    local default_extensions=(
+        py sh yml yaml js jsx java cpp c h hpp cs
+        html css tsx ts go rb php scala rs swift
+    )
+    
+    # Default exclusions as an array for better maintenance
+    local default_exclusions=(
+        ".git/" ".svn/" ".hg/"
+        "node_modules/" "vendor/" "build/" "dist/" "target/"
+        "__pycache__/" "*.pyc" "venv/" ".env" ".venv/"
+        "*_test.go" "*.test.js" "*_spec.rb" "*Test.java" "*_test.py"
+        ".idea/" ".vscode/" ".vs/" "*.swp" "*.swo"
+        "*.log" "*.lock" "*.tmp"
+        "docs/" "*.md" "*.txt" "images/" "audio/" "video/"
+    )
 
-${BOLD}SYNOPSIS${NC}
-    codecollect [OPTIONS]
+    cat <<EOF
+${COLORS[header]}Code Collection and Transmission Script${COLORS[reset]}
 
-${BOLD}DESCRIPTION${NC}
-    Collects code files from a directory and its subdirectories into a single
-    structured text file, formatted specifically for easy LLM (Language Model) processing.
-    Automatically excludes common non-source files and provides various filtering options.
+${COLORS[section]}DESCRIPTION${COLORS[reset]}
+    $(wrap_text "Recursively collects code files from a directory and transmits them to a specified endpoint. Supports multiple file extensions, exclusion patterns, and includes metadata about the collection." "    ")
 
-${BOLD}OPTIONS${NC}
-    ${YELLOW}-d${NC} <directory>    Directory to search (default: current directory)
-    ${YELLOW}-o${NC} <file>         Output file name (default: collected_code.txt)
-    ${YELLOW}-e${NC} <extensions>   Comma-separated list of file extensions to include
-    ${YELLOW}-x${NC} <patterns>     Comma-separated list of patterns to exclude
-    ${YELLOW}-a${NC}                Include all files (override default exclusions)
-    ${YELLOW}-q${NC}                Quiet mode (minimal output)
-    ${YELLOW}-h${NC}                Show this help message
+${COLORS[section]}USAGE${COLORS[reset]}
+    $script_name [OPTIONS]
 
-${BOLD}OUTPUT FORMAT${NC}
-    The output file is structured in sections:
-    • <METADATA>      - Collection information and settings
-    • <FILE_LIST>     - Inventory of all processed files
-    • <STATISTICS>    - Summary of collection results
-    • <CODE_CONTENTS> - The actual source code with clear markers
+${COLORS[section]}OPTIONS${COLORS[reset]}
+    ${COLORS[option]}-d${COLORS[reset]} <directory>    Search directory (default: current directory)
+    ${COLORS[option]}-o${COLORS[reset]} <file>         Output filename (default: collected_code.txt)
+    ${COLORS[option]}-e${COLORS[reset]} <extensions>   File extensions to include (comma-separated)
+                     Default: ${default_extensions[@]}
+    ${COLORS[option]}-x${COLORS[reset]} <patterns>     Additional patterns to exclude (comma-separated)
+    ${COLORS[option]}-a${COLORS[reset]}               Disable default exclusions
+    ${COLORS[option]}-q${COLORS[reset]}               Quiet mode - suppress progress messages
+    ${COLORS[option]}-h${COLORS[reset]}               Show this help message
 
-${BOLD}DEFAULT EXTENSIONS${NC}
-    Common programming languages:
-    • Backend:    .py, .java, .cpp, .c, .go, .rb, .php, .scala, .rs
-    • Frontend:   .js, .ts, .tsx, .html, .css
-    • Headers:    .h, .hpp
-    • Other:      .cs, .swift
+${COLORS[section]}DEFAULT EXCLUSIONS${COLORS[reset]}
+    Version Control:  ${default_exclusions[@]:0:3}
+    Dependencies:    ${default_exclusions[@]:3:5}
+    Cache/Env:       ${default_exclusions[@]:8:5}
+    Test Files:      ${default_exclusions[@]:13:5}
+    IDE/Editor:      ${default_exclusions[@]:18:5}
+    Logs/Temp:       ${default_exclusions[@]:23:3}
+    Documentation:   ${default_exclusions[@]:26:6}
 
-${BOLD}DEFAULT EXCLUSIONS${NC}
-    Common patterns automatically excluded:
-    • Version Control:  .git, .svn, .hg
-    • Dependencies:    node_modules, vendor, build, dist, target
-    • Virtual Envs:    venv, .env, .venv
-    • Cache:           __pycache__, *.pyc
-    • Test Files:      *_test.*, *.test.*, *_spec.*
-    • IDE/Editor:      .idea, .vscode, .vs, *.swp
-    • Temporary:       *.log, *.lock, *.tmp
-    • Documentation:   docs, *.md, *.txt
+${COLORS[section]}OUTPUT FORMAT${COLORS[reset]}
+    • Collection metadata (timestamp, source)
+    • File inventory (paths, sizes)
+    • Statistics (file count, line count)
+    • Code contents with language markers
 
-${BOLD}EXAMPLES${NC}
-    1. Basic usage (current directory):
-       ${BLUE}codecollect${NC}
+${COLORS[section]}EXAMPLES${COLORS[reset]}
+    # Collect Python and JavaScript files
+    $script_name -e py,js
 
-    2. Collect from specific directory:
-       ${BLUE}codecollect -d /path/to/project${NC}
+    # Search specific directory with custom exclusions
+    $script_name -d /path/to/project -x "*.min.js,*.generated.*"
 
-    3. Custom output file:
-       ${BLUE}codecollect -o project_code.txt${NC}
+    # Custom output with all files (no default exclusions)
+    $script_name -a -o my_collection.txt -d /path/to/code
 
-    4. Specific file extensions only:
-       ${BLUE}codecollect -e .py,.js,.tsx${NC}
-
-    5. Exclude specific patterns:
-       ${BLUE}codecollect -x "build,*.test.js,config.py"${NC}
-
-    6. Include all files (no default exclusions):
-       ${BLUE}codecollect -a -d /path/to/project${NC}
-
-    7. Quiet mode with custom settings:
-       ${BLUE}codecollect -q -d /path/to/project -o output.txt -e .py,.js${NC}
-
-${BOLD}OUTPUT STRUCTURE${NC}
-    Example output format:
-    ${GREEN}<METADATA>
-    collection_date: 2024-11-08
-    collection_time: 14:30:00 UTC
-    source_directory: /path/to/source
-    ...
-    </METADATA>
-
-    <FILE_LIST>
-    - file_path: src/main.py
-      extension: py
-      line_count: 150
-    ...
-    </FILE_LIST>${NC}
-
-${BOLD}NOTES${NC}
-    • File paths are stored relative to the search directory
-    • All timestamps are in UTC
-    • Code sections are clearly marked with BEGIN_CODE and END_CODE
-    • Output is formatted for optimal LLM processing
-    • Large repositories might take some time to process
-
+${COLORS[section]}NOTE${COLORS[reset]}
+    ${COLORS[warning]}Files are processed in chunks and sent to http://localhost:4000/api/text${COLORS[reset]}
 EOF
 }
-# Initialize JSON content
-json_content=""
-
 # Process command line arguments
 use_default_excludes=true
 quiet_mode=false
 
-while getopts "d:e:x:aq" opt; do
+while getopts "d:o:e:x:aqh" opt; do
     case $opt in
         d) search_dir="$OPTARG"
            [ ! -d "$search_dir" ] && echo "Error: Directory '$search_dir' does not exist" && exit 1
            ;;
+        o) output_file="$OPTARG";;
         e) IFS=',' read -ra extensions <<< "$OPTARG"
            for i in "${!extensions[@]}"; do
                extensions[$i]="\\${extensions[$i]}"
@@ -138,7 +119,7 @@ while getopts "d:e:x:aq" opt; do
         x) IFS=',' read -ra custom_excludes <<< "$OPTARG"
            exclude_patterns+=("${custom_excludes[@]}")
            ;;
-        a) use_default_excludes=false;;
+        a) use_default_excludes=true;;
         q) quiet_mode=true;;
         h) show_help; exit 0;;
         ?) show_help; exit 1;;
@@ -166,14 +147,22 @@ extension_pattern=$(printf "|%s" "${extensions[@]}")
 extension_pattern="(${extension_pattern:1})"
 find_cmd+=" -type f -regextype posix-extended -regex \".*${extension_pattern}$\" -print"
 
-# Create metadata section
-json_content+="<METADATA>\n"
-json_content+="collection_date: $(date -u '+%Y-%m-%d')\n"
-json_content+="collection_time: $(date -u '+%H:%M:%S UTC')\n"
-json_content+="source_directory: $(realpath "$search_dir")\n"
-json_content+="excluded_patterns: ${exclude_patterns[*]}\n"
-json_content+="file_extensions: ${extensions[*]}\n"
-json_content+="</METADATA>\n\n<FILE_LIST>\n"
+# Create temporary directory for processing
+temp_dir=$(mktemp -d)
+trap 'rm -rf "$temp_dir"' EXIT
+
+# Write metadata section
+cat > "$temp_dir/output.txt" << EOF
+<METADATA>
+collection_date: $(date -u '+%Y-%m-%d')
+collection_time: $(date -u '+%H:%M:%S UTC')
+source_directory: $(realpath "$search_dir")
+excluded_patterns: ${exclude_patterns[*]}
+file_extensions: ${extensions[*]}
+</METADATA>
+
+<FILE_LIST>
+EOF
 
 # Initialize counters
 total_files=0
@@ -186,13 +175,21 @@ while IFS= read -r file; do
     lines=$(wc -l < "$file")
     total_files=$((total_files + 1))
     total_lines=$((total_lines + lines))
-    json_content+="- file_path: $relative_path\n"
+    echo "- file_path: $relative_path" >> "$temp_dir/output.txt"
 done < <(eval "$find_cmd")
 
-json_content+="</FILE_LIST>\n\n<STATISTICS>\n"
-json_content+="total_files: $total_files\n"
-json_content+="total_lines: $total_lines\n"
-json_content+="</STATISTICS>\n\n<CODE_CONTENTS>\n"
+# Write statistics
+cat >> "$temp_dir/output.txt" << EOF
+
+</FILE_LIST>
+
+<STATISTICS>
+total_files: $total_files
+total_lines: $total_lines
+</STATISTICS>
+
+<CODE_CONTENTS>
+EOF
 
 # Second pass - collect code
 while IFS= read -r file; do
@@ -201,20 +198,46 @@ while IFS= read -r file; do
         echo "Processing: $relative_path"
     fi
     
-    json_content+="--- FILE: $relative_path ---\n"
-    json_content+="LANGUAGE: ${file##*.}\n"
-    json_content+="BEGIN_CODE\n"
-    json_content+="$(jq -Rs . < "$file")\n"  # jq is used here to escape file content properly
-    json_content+="END_CODE\n\n"
+    {
+        echo "--- FILE: $relative_path ---"
+        echo "LANGUAGE: ${file##*.}"
+        echo "BEGIN_CODE"
+        sed 's/\\/\\\\/g; s/"/\\"/g; s/\t/\\t/g; s/\r//g' "$file"
+        echo "END_CODE"
+        echo
+    } >> "$temp_dir/output.txt"
 done < <(eval "$find_cmd")
 
 # Close the code contents section
-json_content+="</CODE_CONTENTS>"
+echo "</CODE_CONTENTS>" >> "$temp_dir/output.txt"
 
-# Convert to JSON structure and send
-json_payload=$(jq -n --arg content "$json_content" '{"content": $content}')
-curl -X POST http://localhost:4000/api/text -H "Content-Type: application/json" -d "$json_payload"
+# Split the file into chunks for processing
+split -b 1M "$temp_dir/output.txt" "$temp_dir/chunk_"
+
+for chunk in "$temp_dir"/chunk_*; do
+    if [ "$quiet_mode" = false ]; then
+        echo "Sending chunk: $(basename "$chunk")"
+    fi
+    
+    # Create a temporary JSON file
+    json_file="$temp_dir/payload.json"
+    
+    # Create JSON structure directly without using jq
+    {
+        echo -n '{"content": "'
+        sed 's/\\/\\\\/g; s/"/\\"/g; s/$/\\n/g' "$chunk" | tr -d '\n'
+        echo '"}'
+    } > "$json_file"
+    
+    # Send the JSON file directly to curl
+    curl -X POST http://localhost:4000/api/text \
+         -H "Content-Type: application/json" \
+         --data @"$json_file"
+         
+    # Clean up the temporary JSON file
+    rm -f "$json_file"
+done
 
 if [ "$quiet_mode" = false ]; then
     echo "Collection and transmission complete: $total_files files, $total_lines lines"
-f
+fi

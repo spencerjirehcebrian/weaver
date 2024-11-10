@@ -9,21 +9,28 @@ NC=\033[0m # No Color
 help:
 	@echo "$(CYAN)Available commands:$(NC)"
 	@echo "Development:"
-	@echo "  make install  - Install dependencies for all services"
-	@echo "  make dev      - Start all services in development mode"
-	@echo "  make build    - Build all Docker images"
-	@echo "  make up       - Start all services in production mode"
-	@echo "  make down     - Stop all services"
-	@echo "  make restart  - Restart all services"
+	@echo "  make install    - Install dependencies for all services"
+	@echo "  make dev        - Start all services in development mode"
+	@echo "  make build      - Build all Docker images"
+	@echo "  make up         - Start all services in production mode"
+	@echo "  make down       - Stop all services"
+	@echo "  make restart    - Restart all services"
+	@echo ""
+	@echo "CLI:"
+	@echo "  make install-cli- Install the Weaver CLI tool globally"
 	@echo ""
 	@echo "Database:"
-	@echo "  make migrate  - Run database migrations"
+	@echo "  make migrate    - Run database migrations"
 	@echo ""
 	@echo "Utilities:"
-	@echo "  make logs     - View logs from all services"
-	@echo "  make clean    - Remove all containers and images"
-	@echo "  make cli-setup- Install the Weaver CLI tool"
-	@echo "  make test     - Run tests for all services"
+	@echo "  make logs       - View logs from all services"
+	@echo "  make clean      - Remove all containers and images"
+	@echo "  make test       - Run tests for all services"
+
+# Install CLI
+install-cli:
+	@echo "$(CYAN)Installing Weaver CLI...$(NC)"
+	@./install.sh
 
 # Install dependencies
 install:
