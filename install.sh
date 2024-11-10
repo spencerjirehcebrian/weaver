@@ -22,7 +22,6 @@ install_from_source() {
     if [ "$is_local" = true ] && [ -f "cli/weaver.sh" ]; then
         echo -e "${BLUE}Installing from local source...${NC}"
         cp "cli/weaver.sh" "$INSTALL_DIR/weaver.sh"
-        cp "cli/setup.sh" "$INSTALL_DIR/setup.sh"
     else
         echo -e "${BLUE}Downloading CLI scripts from GitHub...${NC}"
         curl -sSL "https://raw.githubusercontent.com/yourusername/weaver/main/cli/weaver.sh" -o "$INSTALL_DIR/weaver.sh"
@@ -39,7 +38,6 @@ fi
 
 # Make scripts executable
 chmod +x "$INSTALL_DIR/weaver.sh"
-chmod +x "$INSTALL_DIR/setup.sh"
 
 # Create symbolic link
 echo -e "${BLUE}Creating symbolic link...${NC}"
