@@ -13,13 +13,21 @@ const io = new Server(httpServer, {
   },
 });
 
+console.log(
+  process.env.DB_HOST,
+  process.env.DB_PORT,
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD
+);
+
 // Database connection
 const pool = new Pool({
   host: process.env.DB_HOST,
   port: parseInt(process.env.DB_PORT || "5432"),
   database: process.env.DB_NAME,
   user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
+  password: String(process.env.DB_PASSWORD), // Explicit string conversion})
 });
 
 app.use(cors());

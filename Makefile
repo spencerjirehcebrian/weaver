@@ -1,5 +1,5 @@
 # Makefile
-.PHONY: help build up down logs clean cli-setup test install migrate dev prod db-reset db-init
+.PHONY: help build up down logs clean cli-setup test install migrate dev prod db-reset db-init local-dev local-install local-stop
 
 # Colors for terminal output
 CYAN=\033[0;36m
@@ -9,23 +9,75 @@ NC=\033[0m # No Color
 help:
 	@echo "$(CYAN)Available commands:$(NC)"
 	@echo "Development:"
-	@echo "  make install    - Install dependencies for all services"
-	@echo "  make dev        - Start all services in development mode"
-	@echo "  make build      - Build all Docker images"
-	@echo "  make up         - Start all services in production mode"
-	@echo "  make down       - Stop all services"
-	@echo "  make restart    - Restart all services"
+	@echo "  make local-install  - Install dependencies for local development"
+	@echo "  make local-dev      - Run frontend and backend locally with Docker PostgreSQL"
+	@echo "  make local-stop     - Stop local development servers"
+	@echo "  make install        - Install dependencies for all services"
+	@echo "  make dev           - Start all services in Docker development mode"
+	@echo "  make build         - Build all Docker images"
+	@echo "  make up            - Start all services in production mode"
+	@echo "  make down          - Stop all services"
+	@echo "  make restart       - Restart all services"
 	@echo ""
 	@echo "CLI:"
-	@echo "  make install-cli- Install the Weaver CLI tool globally"
+	@echo "  make install-cli   - Install the Weaver CLI tool globally"
 	@echo ""
 	@echo "Database:"
-	@echo "  make migrate    - Run database migrations"
+	@echo "  make migrate       - Run database migrations"
 	@echo ""
 	@echo "Utilities:"
-	@echo "  make logs       - View logs from all services"
-	@echo "  make clean      - Remove all containers and images"
-	@echo "  make test       - Run tests for all services"
+	@echo "  make logs          - View logs from all services"
+	@echo "  make clean         - Remove all containers and images"
+	@echo "  make test          - Run tests for all services"
+
+# Local development setup
+local-install:
+	@echo "$(CYAN)Installing frontend dependencies...$(NC)"
+	cd frontend && npm install
+	@echo "$(CYAN)Installing backend dependencies...$(NC)"
+	cd backend && npm install
+	@echo "$(CYAN)Starting PostgreSQL container...$(NC)"
+	docker-compose up -d postgres
+	@echo "$(CYAN)Waiting for PostgreSQL to start...$(NC)"
+	sleep 5
+	@echo "$(CYAN)Running database initialization...$(NC)"
+	docker-compose exec postgres psql -U postgres -d weaver -f /docker-entrypoint-initdb.d/init.sql
+
+# Run frontend and backend locally
+local-dev:
+	@echo "$(CYAN)Starting PostgreSQL if not running...$(NC)"
+	docker-compose up -d postgres
+	@echo "$(CYAN)Starting backend in the background...$(NC)"
+	cd backend && PORT=4000 DB_HOST=localhost npm run dev & echo $$! > backend.pid
+	@echo "$(CYAN)Starting frontend in the background...$(NC)"
+	cd frontend && PORT=3010 npm start & echo $$! > frontend.pid
+	@echo "$(CYAN)Local development servers are running:$(NC)"
+	@echo "Frontend: http://localhost:3010"
+	@echo "Backend:  http://localhost:4000"
+	@echo "To stop the servers, run: make local-stop"
+
+# Stop local development servers
+# Enhanced stop command
+local-stop:
+	@echo "$(CYAN)Stopping local development servers...$(NC)"
+	-@pkill -f "node.*frontend" || true
+	-@pkill -f "node.*backend" || true
+	-@lsof -ti :3010 | xargs kill -9 || true
+	-@lsof -ti :4000 | xargs kill -9 || true
+	-@rm -f frontend/frontend.pid backend/backend.pid
+	@echo "$(CYAN)Stopping PostgreSQL container...$(NC)"
+	docker-compose stop postgres
+	@echo "$(CYAN)Cleanup complete$(NC)"
+
+# Optional command to show running processes
+local-ps:
+	@echo "$(CYAN)Checking running processes...$(NC)"
+	@echo "Frontend (port 3010):"
+	@lsof -i :3010 || echo "No process using port 3010"
+	@echo "\nBackend (port 4000):"
+	@lsof -i :4000 || echo "No process using port 4000"
+	@echo "\nNode processes:"
+	@ps aux | grep node | grep -v grep || echo "No node processes found"
 
 # Install CLI
 install-cli:
@@ -39,7 +91,7 @@ install:
 	@echo "$(CYAN)Installing backend dependencies...$(NC)"
 	cd backend && npm install
 
-# Development mode
+# Development mode (all in Docker)
 dev:
 	@echo "$(CYAN)Starting services in development mode...$(NC)"
 	docker-compose -f docker-compose.yml up --build
@@ -68,7 +120,7 @@ logs:
 	@echo "$(CYAN)Showing logs...$(NC)"
 	docker-compose logs -f
 
-# Remove all containers and images
+# Clean up
 clean:
 	@echo "$(CYAN)Cleaning up Docker resources...$(NC)"
 	docker-compose down --rmi all --volumes --remove-orphans
@@ -88,31 +140,6 @@ cli-setup:
 # Run tests for all services
 test:
 	@echo "$(CYAN)Running frontend tests...$(NC)"
-	docker-compose run frontend npm test
+	cd frontend && npm test
 	@echo "$(CYAN)Running backend tests...$(NC)"
-	docker-compose run backend npm test
-
-# Useful shortcuts for individual services
-.PHONY: fe-logs be-logs pg-logs
-fe-logs:
-	docker-compose logs -f frontend
-
-be-logs:
-	docker-compose logs -f backend
-
-pg-logs:
-	docker-compose logs -f postgres
-
-
-# Initialize database schema
-db-init:
-	@echo "$(CYAN)Initializing database schema...$(NC)"
-	docker-compose exec postgres psql -U postgres -d weaver -f /docker-entrypoint-initdb.d/init.sql
-
-# Reset database (careful - this deletes all data!)
-db-reset:
-	@echo "$(CYAN)Resetting database...$(NC)"
-	docker-compose down -v
-	docker-compose up -d postgres
-	@echo "Waiting for PostgreSQL to start..."
-	@sleep 5
+	cd backend && npm test
