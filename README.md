@@ -40,7 +40,7 @@ make dev
 ### One-Line Install (Linux/macOS)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/yourusername/weaver/main/install.sh | bash
+curl -sSL https://github.com/spencerjirehcebrian/weaver/main/install.sh | bash
 ```
 
 ### Manual Install
