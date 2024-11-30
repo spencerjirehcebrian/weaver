@@ -24,8 +24,8 @@ install_from_source() {
         cp "cli/weaver.sh" "$INSTALL_DIR/weaver.sh"
     else
         echo -e "${BLUE}Downloading CLI scripts from GitHub...${NC}"
-        curl -sSL "https://raw.githubusercontent.com/yourusername/weaver/main/cli/weaver.sh" -o "$INSTALL_DIR/weaver.sh"
-        curl -sSL "https://raw.githubusercontent.com/yourusername/weaver/main/cli/setup.sh" -o "$INSTALL_DIR/setup.sh"
+        curl -sSL "https://raw.githubusercontent.com/spencerjirehcebrian/weaver/main/cli/weaver.sh" -o "$INSTALL_DIR/weaver.sh"
+        curl -sSL "https://raw.githubusercontent.com/spencerjirehcebrian/weaver/main/install.sh" -o "$INSTALL_DIR/install.sh"
     fi
 }
 
