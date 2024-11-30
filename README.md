@@ -20,7 +20,7 @@ A modern, real-time code collection and collaboration tool that helps developers
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/weaver
+git clone https://github.com/spencerjirehcebrian/weaver
 cd weaver
 ```
 
