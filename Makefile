@@ -1,8 +1,10 @@
 # Makefile
-.PHONY: help dev prod deploy-prod deploy-staging
+.PHONY: help dev prod deploy-prod deploy-staging check-git-repo init-git
 
 # Colors for terminal output
 CYAN=\033[0;36m
+RED=\033[0;31m
+GREEN=\033[0;32m
 NC=\033[0m # No Color
 
 # Development Environment
@@ -16,25 +18,22 @@ deploy-prod: deploy-backend-prod deploy-frontend-prod
 deploy-backend-prod:
 	@echo "$(CYAN)Deploying backend to production...$(NC)"
 	cd backend && \
-	caprover deploy -a weaver-api -b main
+	tar -czf deploy.tar.gz * && \
+	caprover deploy -a weaver-api -t ./deploy.tar.gz && \
+	rm deploy.tar.gz
 
 deploy-frontend-prod:
 	@echo "$(CYAN)Deploying frontend to production...$(NC)"
 	cd frontend && \
-	caprover deploy -a weaver -b main
+	tar -czf deploy.tar.gz * && \
+	caprover deploy -a weaver -t ./deploy.tar.gz && \
+	rm deploy.tar.gz
 
-# Staging Build & Deploy (if needed)
-deploy-staging: deploy-backend-staging deploy-frontend-staging
-
-deploy-backend-staging:
-	@echo "$(CYAN)Deploying backend to staging...$(NC)"
-	cd backend && \
-	caprover deploy -a weaver-api-staging -b staging
-
-deploy-frontend-staging:
-	@echo "$(CYAN)Deploying frontend to staging...$(NC)"
-	cd frontend && \
-	caprover deploy -a weaver-staging -b staging
+# Build production images locally (for testing)
+build-prod:
+	@echo "$(CYAN)Building production images locally...$(NC)"
+	docker build -f frontend/Dockerfile.prod -t weaver-frontend:prod ./frontend
+	docker build -f backend/Dockerfile.prod -t weaver-backend:prod ./backend
 
 # Local development utilities
 install-dev:
@@ -69,7 +68,7 @@ help:
 	@echo ""
 	@echo "Production:"
 	@echo "  make deploy-prod      - Deploy to production"
-	@echo "  make deploy-staging   - Deploy to staging"
+	@echo "  make build-prod       - Build production images locally"
 	@echo ""
 	@echo "Utilities:"
 	@echo "  make clean            - Clean up development environment"
