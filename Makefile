@@ -16,14 +16,12 @@ dev:
 deploy-prod: deploy-backend-prod deploy-frontend-prod
 
 deploy-backend-prod:
-	@echo "$(CYAN)Deploying backend to production...$(NC)"
 	cd backend && \
 	tar -czf deploy.tar.gz * && \
 	caprover deploy -a weaver-api -t ./deploy.tar.gz && \
 	rm deploy.tar.gz
 
 deploy-frontend-prod:
-	@echo "$(CYAN)Deploying frontend to production...$(NC)"
 	cd frontend && \
 	tar -czf deploy.tar.gz * && \
 	caprover deploy -a weaver -t ./deploy.tar.gz && \
@@ -68,6 +66,8 @@ help:
 	@echo ""
 	@echo "Production:"
 	@echo "  make deploy-prod      - Deploy to production"
+	@echo "  make deploy-backend-prod      - Deploy backend to production"
+	@echo "  make deploy-frontend-prod      - Deploy frontend to production"
 	@echo "  make build-prod       - Build production images locally"
 	@echo ""
 	@echo "Utilities:"

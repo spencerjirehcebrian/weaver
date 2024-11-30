@@ -7,7 +7,7 @@ extensions=("\.py" ".sh" ".yml" "\.yaml" "\.js" "\.jsx" "\.java" "\.cpp" "\.c" "
 exclude_patterns=()
 default_excludes=(
     ".git" ".svn" ".hg" "package-lock.json"
-    "node_modules" "vendor" "build" "dist" "target"
+    "node_modules" "vendor" "build" "dist" "target" ".next"
     "__pycache__" "*.pyc" "venv" ".env" ".venv" 
     "*_test.go" "*.test.js" "*_spec.rb" "*Test.java" "*_test.py"
     ".idea" ".vscode" ".vs" "*.swp" "*.swo"
@@ -230,7 +230,7 @@ for chunk in "$temp_dir"/chunk_*; do
     } > "$json_file"
     
     # Send the JSON file directly to curl
-    curl -X POST http://localhost:4000/api/text \
+    curl -X POST http://weaver-api.spencerjireh.com/api/text \
          -H "Content-Type: application/json" \
          --data @"$json_file"
          

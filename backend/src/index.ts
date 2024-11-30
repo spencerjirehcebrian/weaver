@@ -8,9 +8,15 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3010",
+    origin: process.env.CORS_ORIGIN || "https://weaver.spencerjireh.com",
     methods: ["GET", "POST"],
+    credentials: true,
   },
+  // Add these settings for secure WebSocket
+  transports: ["websocket", "polling"],
+  allowEIO3: true,
+  pingTimeout: 60000,
+  pingInterval: 25000,
 });
 
 console.log(
@@ -18,7 +24,8 @@ console.log(
   process.env.DB_PORT,
   process.env.DB_NAME,
   process.env.DB_USER,
-  process.env.DB_PASSWORD
+  process.env.DB_PASSWORD,
+  process.env.CORS_ORIGIN
 );
 
 // Database connection
@@ -35,6 +42,11 @@ app.use(express.json({ limit: "50mb" }));
 
 // Health check endpoint
 app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
+// Get root endpoint
+app.get("/", (req, res) => {
   res.json({ status: "ok" });
 });
 

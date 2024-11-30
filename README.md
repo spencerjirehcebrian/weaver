@@ -1,172 +1,189 @@
-# Weaver 🕸️
+# 🕸️ Weaver
 
-A modern, real-time code collection and collaboration tool that helps developers gather, and share code snippets, directories and repositories across their development environment. Meant to be used for feeding your context and code to LLMs for better results.
+A modern, real-time code collection and collaboration tool that helps developers gather, and share code snippets, directories and repositories across their development environment. Meant to be used for feeding context and code to LLMs for better results. Heavily inspired by Repomix.
 
 > ⚠️ **Development Status**: This project is in early development and is not yet stable. APIs and features may change significantly between versions. Use at your own risk.
 
 ## ✨ Features
 
-- **Real-time Sync** - Instantly collect and synchronize code across your development environment
-- **Modern Interface** - Clean, responsive design with dark/light mode support
-- **Powerful Search** - Quickly find code snippets with full-text search
-- **CLI Tool** - Seamlessly collect code from your terminal
-- **Live Updates** - Real-time WebSocket updates for collaborative workflows
-- **Code Organization** - Automatic language detection and syntax highlighting
-- **Quick Copy** - One-click code copying with visual feedback
-- **Docker Ready** - Easy deployment with Docker Compose
+- 🔄 Real-time text updates using WebSocket connections
+- 🌓 Dark/Light mode support
+- 🔍 Full-text search functionality
+- ⚡ Fast and responsive interface
+- 📱 Mobile-friendly design
+- ⚙️ CLI tool for collecting and sending code files
+- 🔒 Secure WebSocket implementation
+- 🎯 Modern, clean UI with animations and transitions
 
-## 🚀 Quick Start
+## 🛠️ Tech Stack
+
+### 🎨 Frontend
+
+- React with TypeScript
+- TailwindCSS for styling
+- Socket.io-client for real-time updates
+- Lucide React for icons
+
+### 🔧 Backend
+
+- Node.js with Express
+- TypeScript
+- PostgreSQL database
+- Socket.io for WebSocket connections
+
+### 🚀 DevOps
+
+- Docker and Docker Compose for containerization
+- Nginx for reverse proxy
+- CapRover for deployment
+
+## 🏁 Getting Started
+
+### 📋 Prerequisites
+
+- Node.js (v18 or higher)
+- Docker and Docker Compose
+- PostgreSQL (if running locally without Docker)
+- npm or yarn
+
+### 💻 Installation
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/spencerjirehcebrian/weaver
+git clone <repository-url>
 cd weaver
 ```
 
-2. Start the application:
+2. Install dependencies:
+
+```bash
+# Install frontend dependencies
+cd frontend
+npm install
+
+# Install backend dependencies
+cd ../backend
+npm install
+```
+
+3. Set up environment variables:
+
+Create `.env.development` files in both frontend and backend directories using the provided `.env.example` templates.
+
+### 🔨 Development
+
+Start the development environment using Docker Compose:
 
 ```bash
 make dev
 ```
 
-3. Access the interfaces:
-
-- Web UI: http://localhost:3010
-- API: http://localhost:4000
-
-## 🛠️ CLI Installation
-
-### One-Line Install (Linux/macOS)
+Or start services individually:
 
 ```bash
-curl -sSL https://github.com/spencerjirehcebrian/weaver/main/install.sh | bash
+# Start frontend
+make start-frontend-dev
+
+# Start backend
+make start-backend-dev
 ```
 
-### Manual Install
+### 🚀 Production Deployment
+
+Deploy to production using:
+
+```bash
+make deploy-prod
+```
+
+Or deploy services individually:
+
+```bash
+# Deploy backend
+make deploy-backend-prod
+
+# Deploy frontend
+make deploy-frontend-prod
+```
+
+## 🛠️ CLI Tool Installation
+
+Install the Weaver CLI tool:
 
 ```bash
 ./install.sh
-# or
-make install-cli
 ```
 
-### CLI Usage
+### 🖥️ CLI Usage
 
 ```bash
-# Collect code from current directory
-weaver
+weaver [OPTIONS]
 
-# Specify target directory
-weaver -d /path/to/project
-
-# Filter specific extensions
-weaver -e js,py,go
-
-# Exclude patterns
-weaver -x "*.test.js,*.min.js"
-
-# Show help
-weaver -h
-```
-
-## 🏗️ Development Setup
-
-### Prerequisites
-
-- Docker & Docker Compose
-- Node.js 18+
-- PostgreSQL 14+
-
-### Environment Setup
-
-1. **Start Services**
-
-```bash
-# Development mode
-make dev
-
-# Production mode
-make up
-```
-
-2. **Install Dependencies**
-
-```bash
-make install
-```
-
-3. **Database Setup**
-
-```bash
-make db-init
-```
-
-### Available Commands
-
-```bash
-make dev          # Start development environment
-make up          # Start production environment
-make down        # Stop all services
-make install     # Install dependencies
-make install-cli # Install CLI tool
-make test        # Run tests
-make clean       # Clean environment
-make logs        # View logs
+Options:
+  -d <directory>    Search directory (default: current directory)
+  -o <file>         Output filename (default: collected_code.txt)
+  -e <extensions>   File extensions to include (comma-separated)
+  -x <patterns>     Additional patterns to exclude (comma-separated)
+  -a               Disable default exclusions
+  -q               Quiet mode - suppress progress messages
+  -h               Show help message
 ```
 
 ## 📁 Project Structure
 
 ```
 weaver/
-├── backend/                # Node.js/Express backend
-│   ├── src/               # Backend source code
-│   ├── db/                # Database migrations & schemas
-│   └── Dockerfile
-├── frontend/              # React frontend
+├── frontend/               # React frontend application
 │   ├── src/
 │   │   ├── components/    # React components
-│   │   └── App.tsx       # Main application
-│   └── Dockerfile
-├── cli/                   # CLI tool
-│   └── weaver.sh         # CLI implementation
-├── docker-compose.yml     # Docker services config
-├── install.sh            # CLI installer
-└── Makefile              # Build automation
+│   │   ├── services/      # API services
+│   │   ├── types/        # TypeScript type definitions
+│   │   └── utils/        # Utility functions
+│   └── public/           # Static files
+├── backend/               # Node.js backend application
+│   ├── src/              # Source code
+│   └── db/               # Database migrations and schemas
+└── cli/                  # Command-line interface tool
 ```
 
-## 🔧 Configuration
+## 🎯 Features in Detail
 
-### Environment Variables
+### 🔄 Real-time Updates
 
-**Backend**
+- WebSocket connection for instant message delivery
+- Automatic reconnection handling
+- Connection status indicator
 
-```env
-NODE_ENV=development
-PORT=4000
-DB_HOST=postgres
-DB_PORT=5432
-DB_NAME=weaver
-DB_USER=postgres
-DB_PASSWORD=postgres
-```
+### 📝 Message Management
 
-**Frontend**
+- Expandable message cards
+- Copy to clipboard functionality
+- Timestamp formatting
+- Message sorting (newest/oldest)
 
-```env
-PORT=3010
-REACT_APP_API_URL=http://localhost:4000
-```
+### 🔍 Search and Filter
+
+- Real-time search functionality
+- ID-based searching
+- Content-based filtering
+
+### 🎨 UI/UX
+
+- Responsive design
+- Loading states and animations
+- Error handling and display
+- Empty state handling
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📝 License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 

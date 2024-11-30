@@ -1,19 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { io } from "socket.io-client";
+import { Socket } from "socket.io-client";
 import { Loader } from "lucide-react";
 import { Header } from "./components/Header";
 import { MessageList } from "./components/MessageList";
 import { Footer } from "./components/Footer";
-
-interface TextData {
-  id: number;
-  content: string;
-  created_at: string;
-}
-
-interface ExpandedState {
-  [key: number]: boolean;
-}
+import { TextData, ExpandedState } from "./types/types";
+import { ApiService } from "./services/ApiService";
 
 export default function App() {
   const [texts, setTexts] = useState<TextData[]>([]);
@@ -26,6 +18,7 @@ export default function App() {
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [darkMode, setDarkMode] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
+  const [, setSocket] = useState<Socket | null>(null);
 
   const handleMessageClick = (e: React.MouseEvent, id: number) => {
     if (!(e.target as HTMLElement).closest(".message-content")) {
@@ -63,41 +56,23 @@ export default function App() {
     });
   };
 
+  // Initialize WebSocket connection
   useEffect(() => {
-    setIsLoading(true);
+    const newSocket = ApiService.initializeSocket();
+    setSocket(newSocket);
 
-    fetch("http://localhost:4000/api/texts")
-      .then((response) => response.json())
-      .then((data) => {
-        const textsData = Array.isArray(data) ? data : data.texts;
-        if (Array.isArray(textsData)) {
-          setTexts(textsData);
-          setFilteredTexts(textsData);
-        } else {
-          throw new Error("Invalid data format received from API");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching texts:", error);
-        setError(error.message);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-
-    const socket = io("http://localhost:4000");
-
-    socket.on("connect", () => {
+    newSocket.on("connect", () => {
       setIsConnected(true);
       setError("");
     });
 
-    socket.on("connect_error", (error) => {
+    newSocket.on("connect_error", (error) => {
       setIsConnected(false);
       setError("Failed to connect to real-time updates");
+      console.error("WebSocket connection error:", error);
     });
 
-    socket.on("newText", (newText: TextData) => {
+    newSocket.on("newText", (newText: TextData) => {
       setTexts((prevTexts) => {
         const updatedTexts = Array.isArray(prevTexts)
           ? [newText, ...prevTexts]
@@ -107,13 +82,33 @@ export default function App() {
     });
 
     return () => {
-      socket.disconnect();
+      newSocket.disconnect();
     };
   }, []);
 
+  // Fetch initial texts
+  useEffect(() => {
+    const fetchInitialTexts = async () => {
+      try {
+        const data = await ApiService.fetchTexts();
+        setTexts(data);
+        setFilteredTexts(data);
+      } catch (error) {
+        console.error("Error fetching texts:", error);
+        setError(
+          error instanceof Error ? error.message : "Unknown error occurred"
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchInitialTexts();
+  }, []);
+
+  // Update filtered texts when sort order changes
   useEffect(() => {
     setFilteredTexts(sortTexts(searchTerm ? filteredTexts : texts));
-    // eslint-disable-next-line
   }, [sortOrder, texts, searchTerm]);
 
   if (isLoading) {
@@ -145,6 +140,7 @@ export default function App() {
       </div>
     );
   }
+
   return (
     <div
       className={`min-h-screen transition-colors duration-300 ${
