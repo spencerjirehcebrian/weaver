@@ -1,8 +1,37 @@
-# 🕸️ Weaver
+# 🕸️ Weavyr
 
 A modern, real-time code collection and collaboration tool that helps developers gather, and share code snippets, directories and repositories across their development environment. Meant to be used for feeding context and code to LLMs for better results. Heavily inspired by Repomix.
 
 > ⚠️ **Development Status**: This project is in early development and is not yet stable. APIs and features may change significantly between versions. Use at your own risk.
+
+## 🌐 Usage
+
+### Web Interface
+
+Visit [weaver.spencerjireh.com](https://weaver.spencerjireh.com) to access the web interface.
+
+### CLI Installation
+
+Install the Weavyr CLI tool globally using npm:
+
+```bash
+npm install -g weavyr
+```
+
+### CLI Usage
+
+```bash
+weavyr [OPTIONS]
+
+Options:
+  -d <directory>    Search directory (default: current directory)
+  -o <file>         Output filename (default: collected_code.txt)
+  -e <extensions>   File extensions to include (comma-separated)
+  -x <patterns>     Additional patterns to exclude (comma-separated)
+  -a               Disable default exclusions
+  -q               Quiet mode - suppress progress messages
+  -h               Show help message
+```
 
 ## ✨ Features
 
@@ -52,7 +81,7 @@ A modern, real-time code collection and collaboration tool that helps developers
 
 ```bash
 git clone <repository-url>
-cd weaver
+cd weavyr
 ```
 
 2. Install dependencies:
@@ -89,6 +118,24 @@ make start-frontend-dev
 make start-backend-dev
 ```
 
+### 🛠️ Local CLI Development
+
+To develop the CLI tool locally:
+
+```bash
+# Navigate to the CLI directory
+cd cli/weaver-node/weaver
+
+# Build the CLI
+npm run build
+
+# Create a global symlink
+npm link
+
+# Now you can use 'weavyr' command locally
+weavyr --help
+```
+
 ### 🚀 Production Deployment
 
 Deploy to production using:
@@ -107,33 +154,10 @@ make deploy-backend-prod
 make deploy-frontend-prod
 ```
 
-## 🛠️ CLI Tool Installation
-
-Install the Weaver CLI tool:
-
-```bash
-./install.sh
-```
-
-### 🖥️ CLI Usage
-
-```bash
-weaver [OPTIONS]
-
-Options:
-  -d <directory>    Search directory (default: current directory)
-  -o <file>         Output filename (default: collected_code.txt)
-  -e <extensions>   File extensions to include (comma-separated)
-  -x <patterns>     Additional patterns to exclude (comma-separated)
-  -a               Disable default exclusions
-  -q               Quiet mode - suppress progress messages
-  -h               Show help message
-```
-
 ## 📁 Project Structure
 
 ```
-weaver/
+weavyr/
 ├── frontend/               # React frontend application
 │   ├── src/
 │   │   ├── components/    # React components
