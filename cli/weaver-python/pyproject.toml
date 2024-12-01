@@ -2,7 +2,7 @@
 name = "weaver"
 version = "0.1.0"
 description = "A beautiful terminal app for collecting and transmitting code files"
-authors = ["Your Name <your.email@example.com>"]
+authors = ["Spencer Jireh Cebrian <spencercebian123@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
