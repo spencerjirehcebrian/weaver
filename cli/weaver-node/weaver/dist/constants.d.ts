@@ -3,5 +3,5 @@ export declare const DEFAULT_CONFIG: {
     excludePatterns: string[];
     apiEndpoint: string;
     concurrency: number;
-    format: "json";
+    format: "text";
 };

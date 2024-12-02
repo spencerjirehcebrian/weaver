@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 export function setupCLI() {
     program
         .option("-d, --dir <directory>", "Search directory", ".")
-        .option("-o, --output <file>", "Output filename", "collected_code.txt")
+        .option("-o, --output <file>", "Output filename")
         .option("-e, --extensions <list>", "File extensions to include (comma-separated)")
         .option("-x, --exclude <patterns>", "Additional patterns to exclude (comma-separated)")
         .option("-a, --all", "Disable default exclusions")
@@ -17,7 +17,7 @@ export function setupCLI() {
         .option("-c, --concurrency <number>", "Number of concurrent file operations", "4")
         .option("--skip-upload", "Skip uploading to server")
         .option("--api-endpoint <url>", "Custom API endpoint")
-        .option("--format <type>", "Output format (json or text)", "json")
+        .option("--format <type>", "Output format (json or text)", "text")
         .parse(process.argv);
     const options = program.opts();
     return {
@@ -36,7 +36,11 @@ export function setupCLI() {
     };
 }
 // Immediately execute main when run as CLI
-main().catch((error) => {
-    console.error("Error:", error);
-    process.exit(1);
-});
+if (import.meta.url === `file://${__filename}`) {
+    main()
+        .then(() => process.exit(0))
+        .catch((error) => {
+        console.error("Error:", error);
+        process.exit(1);
+    });
+}

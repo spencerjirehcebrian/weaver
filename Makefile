@@ -18,13 +18,13 @@ deploy-prod: deploy-backend-prod deploy-frontend-prod
 deploy-backend-prod:
 	cd backend && \
 	tar -czf deploy.tar.gz * && \
-	caprover deploy -a weaver-api -t ./deploy.tar.gz && \
+	caprover deploy -a weavyr-api -t ./deploy.tar.gz && \
 	rm deploy.tar.gz
 
 deploy-frontend-prod:
 	cd frontend && \
 	tar -czf deploy.tar.gz * && \
-	caprover deploy -a weaver -t ./deploy.tar.gz && \
+	caprover deploy -a weavyr -t ./deploy.tar.gz && \
 	rm deploy.tar.gz
 
 # Build production images locally (for testing)

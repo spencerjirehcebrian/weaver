@@ -1,6 +1,6 @@
-# Weaver
+# Weavyr
 
-A powerful code collection and analysis tool that helps you gather, process, and analyze code from your projects. Weaver can scan directories, process multiple file types, generate statistics, and optionally upload results to a server.
+The CLI tool of the weavyr project. A modern, real-time code collection and collaboration tool that helps developers gather, and share code snippets, directories and repositories across their development environment. Meant to be used for feeding context and code to LLMs for better results. Heavily inspired by Repomix.
 
 ## Installation
 
@@ -26,10 +26,12 @@ npm install -g weavyr
 Basic usage:
 
 ```bash
-weaver --dir /path/to/your/project
+weavyr
 ```
 
-This will scan the specified directory and create a file named `collected_code.txt` with the analysis results.
+This will scan the specified directory and upload the code to the weavyr platform.
+
+View the code at [weavyr.spencerjireh.com](https://weavyr.spencerjireh.com/)
 
 ### Command Line Options
 

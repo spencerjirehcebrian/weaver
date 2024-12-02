@@ -39,7 +39,7 @@ export const Header = ({
                 <MessageCircle className="w-6 h-6 text-white" />
               </div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                Weaver
+                Weavyr
               </h1>
             </div>
             <div className="flex items-center space-x-4">

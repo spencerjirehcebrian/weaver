@@ -21,7 +21,7 @@ export interface Statistics {
     };
 }
 export interface Config {
-    outputFile: string;
+    outputFile?: string;
     searchDir: string;
     extensions: string[];
     excludePatterns: string[];

@@ -40,7 +40,7 @@ export const DEFAULT_CONFIG = {
         ".env",
         ".venv",
     ],
-    apiEndpoint: "http://weaver-api.spencerjireh.com/api/text",
+    apiEndpoint: "http://weavyr-api.spencerjireh.com/api/text",
     concurrency: 4,
-    format: "json",
+    format: "text",
 };
