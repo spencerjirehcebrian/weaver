@@ -19,7 +19,7 @@ export interface Statistics {
 }
 
 export interface Config {
-  outputFile: string;
+  outputFile?: string; // Made optional
   searchDir: string;
   extensions: string[];
   excludePatterns: string[];
@@ -38,5 +38,3 @@ export interface ProcessedFile {
   size: number;
   extension: string;
 }
-
-

@@ -9,7 +9,7 @@ export const MessageHeader = ({
   darkMode: boolean;
 }) => (
   <div className="flex items-center space-x-4 min-w-0">
-    <div className="flex flex-col items-start space-y-1">
+    <div className="flex items-center space-x-3">
       <span className="px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs font-medium rounded-full shadow-sm">
         #{text.id}
       </span>
@@ -21,12 +21,5 @@ export const MessageHeader = ({
         {formatDate(text.created_at)}
       </span>
     </div>
-    <p
-      className={`${
-        darkMode ? "text-gray-300" : "text-gray-700"
-      } truncate font-medium flex-1`}
-    >
-      {text.content.split("\\n")[0].substring(0, 100)}
-    </p>
   </div>
 );
