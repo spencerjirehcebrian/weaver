@@ -8,7 +8,7 @@ A modern, real-time code collection and collaboration tool that helps developers
 
 ### Web Interface
 
-Visit [weaver.spencerjireh.com](https://weaver.spencerjireh.com) to access the web interface.
+Visit [weaver.spencerjireh.com](https://weavyr.spencerjireh.com) to access the web interface.
 
 ### CLI Installation
 
